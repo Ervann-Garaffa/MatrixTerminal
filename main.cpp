@@ -8,7 +8,6 @@ const int SCALE_ROW = 18;
 const int SCALE_COL = 12;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
-const int MAX_MODIFIERS = 500;
 
 int main()
 {
@@ -23,7 +22,7 @@ int main()
     emptyText.setFillColor(sf::Color::Green);
     emptyText.setFont(font);
     emptyText.setCharacterSize(20);
-    emptyText.setString("a");
+    emptyText.setString(" ");
 
     sf::Text grid[N_COL * N_ROW];
     for (int i = 0; i < N_COL * N_ROW; i++)
@@ -55,7 +54,7 @@ int main()
         {
             for (int j = 0; j < sizeof(organizer[0]) / sizeof(organizer[0][0]); j++)
             {
-                if (!organizer[i][j] && runners.size() < MAX_MODIFIERS)
+                if (!organizer[i][j])
                 {
                     organizer[i][j] = 1;
                     runners.emplace_back(Runner(i, j));
@@ -78,7 +77,7 @@ int main()
             window.draw(grid[i]);
         window.display();
 
-        std::this_thread::sleep_for(20ms);
+        std::this_thread::sleep_for(30ms);
     }
 
     return EXIT_SUCCESS;

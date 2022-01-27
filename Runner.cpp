@@ -1,11 +1,12 @@
 #include "Runner.h"
 
 Runner::Runner(int col, int id)
- : headRow(0), column(col), randomGlyph(' '), popLetterWhite(true), idInColumn(id)
+ : headRow(0), column(col), randomGlyph(' '), popLetterWhite(false), idInColumn(id)
 {
-    speed = rand() % 5 + 1;
+    speed = rand() % 8 + 1;
     counter = speed;
-    length = rand() % 57 + 3;
+    length = rand() % 37 + 3;
+    popLetterWhite = rand() % 10 + 1 <= 3 ? true : false;
 }
 
 Runner::~Runner(){}
