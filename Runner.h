@@ -11,7 +11,7 @@ struct Runner
     int speed;
     int counter;
     
-    bool firstLetterWhite;
+    bool popLetterWhite;
     char randomGlyph;
 
     Runner(int col, int id);

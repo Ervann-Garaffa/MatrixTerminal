@@ -2,17 +2,18 @@
 
 using namespace std::chrono_literals;
 
-const int WIN_WIDTH = 1600;
-const int WIN_HEIGHT = 800;
-const int SCALE_ROW = 16;
+const int WIN_WIDTH = 1920;
+const int WIN_HEIGHT = 1080;
+const int SCALE_ROW = 18;
 const int SCALE_COL = 12;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
-const int MAX_MODIFIERS = 400;
+const int MAX_MODIFIERS = 500;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Matrix Terminal");
+    sf::RenderWindow window;//(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Matrix Terminal");
+    window.create(sf::VideoMode::getDesktopMode(), "Borderless Fullscreen", sf::Style::Fullscreen);
 
     sf::Font font;
     if (!font.loadFromFile("MatrixCodeNfi-YPPj.otf"))
@@ -30,20 +31,6 @@ int main()
         grid[i] = emptyText;
         grid[i].setPosition(    SCALE_COL * (i / N_ROW) + 3, 
                                 SCALE_ROW * (i % N_ROW) - 5);
-
-        /*/ Markers to get position references
-        // TO DELETE
-        if (i < N_ROW)
-        {
-            grid[i].setString(std::to_string(i));
-            grid[i].setCharacterSize(10);
-        }
-
-        if (i % N_ROW == 0)
-        {
-            grid[i].setString(std::to_string(i / N_ROW));
-            grid[i].setCharacterSize(10);
-        }*/
     }
 
     srand(time(nullptr));
@@ -72,7 +59,6 @@ int main()
                 {
                     organizer[i][j] = 1;
                     runners.emplace_back(Runner(i, j));
-                    std::cout << runners[runners.size() - 1].speed << "\n";
                 }
             }
         }

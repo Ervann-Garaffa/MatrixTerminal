@@ -1,17 +1,14 @@
 #include "Runner.h"
 
 Runner::Runner(int col, int id)
-    : headRow(0), column(col), randomGlyph(' '), firstLetterWhite(true), idInColumn(id)
+ : headRow(0), column(col), randomGlyph(' '), popLetterWhite(true), idInColumn(id)
 {
-    length = rand() % 57 + 3;
     speed = rand() % 5 + 1;
     counter = speed;
+    length = rand() % 57 + 3;
 }
 
-Runner::~Runner()
-{
-
-}
+Runner::~Runner(){}
 
 void Runner::GenerateGlyphs(sf::Text *grid, const int &N_ROW)
 {
@@ -23,7 +20,7 @@ void Runner::GenerateGlyphs(sf::Text *grid, const int &N_ROW)
         {
             grid[N_ROW * column + headRow].setString(randomGlyph);
 
-            if (firstLetterWhite)
+            if (popLetterWhite)
             {
                 grid[N_ROW * column + headRow].setFillColor(sf::Color::White);
 
