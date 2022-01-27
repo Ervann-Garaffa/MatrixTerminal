@@ -8,6 +8,7 @@ const int SCALE_ROW = 16;
 const int SCALE_COL = 12;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
+const int MAX_MODIFIERS = 400;
 
 int main()
 {
@@ -23,8 +24,6 @@ int main()
     emptyText.setCharacterSize(20);
     emptyText.setString("a");
 
-    std::cout << "N_ROW : " << N_ROW << "  |  N_COL : " << N_COL << "\n";
-
     sf::Text grid[N_COL * N_ROW];
     for (int i = 0; i < N_COL * N_ROW; i++)
     {
@@ -32,7 +31,7 @@ int main()
         grid[i].setPosition(    SCALE_COL * (i / N_ROW) + 3, 
                                 SCALE_ROW * (i % N_ROW) - 5);
 
-        // Markers to get position references
+        /*/ Markers to get position references
         // TO DELETE
         if (i < N_ROW)
         {
@@ -44,17 +43,16 @@ int main()
         {
             grid[i].setString(std::to_string(i / N_ROW));
             grid[i].setCharacterSize(10);
-        }
+        }*/
     }
 
     srand(time(nullptr));
-    Runner r(40);
-    //std::vector<Runner> runners;
+    int organizer[N_COL][3];
+    std::vector<Runner> runners;
+    sf::Event event;
 
     while(window.isOpen())
     {
-        sf::Event event;
-
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -64,17 +62,37 @@ int main()
             {
                 int flag = std::cin.get();
             }
-
         }
-        
-        r.GenerateGlyphs(grid, N_ROW);
+
+        for (int i = 0; i < sizeof(organizer) / sizeof(organizer[0]); i++)
+        {
+            for (int j = 0; j < sizeof(organizer[0]) / sizeof(organizer[0][0]); j++)
+            {
+                if (!organizer[i][j] && runners.size() < MAX_MODIFIERS)
+                {
+                    organizer[i][j] = 1;
+                    runners.emplace_back(Runner(i, j));
+                    std::cout << runners[runners.size() - 1].speed << "\n";
+                }
+            }
+        }
+
+        for (int i = 0; i < runners.size(); i++)
+        {
+            runners[i].GenerateGlyphs(grid, N_ROW);
+            if (runners[i].headRow - runners[i].length >= N_ROW)
+            {
+                organizer[runners[i].column][runners[i].idInColumn] = 0;
+                runners.erase(runners.begin() + i);
+            }
+        }
 
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)
             window.draw(grid[i]);
         window.display();
 
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(20ms);
     }
 
     return EXIT_SUCCESS;
