@@ -1,3 +1,8 @@
 # MatrixTerminal
 
-Requires GCC and SFML libraries
+Requires:
+- SFML library
+
+Recommended for direct rebuild
+- GCC compiler
+- Make tools
