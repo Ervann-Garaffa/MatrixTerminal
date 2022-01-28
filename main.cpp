@@ -1,5 +1,6 @@
 #include "Runner.h"
 #include "Clipper.h"
+#include "Sticker.h"
 #include "Killer.h"
 
 using namespace std::chrono_literals;
@@ -39,6 +40,7 @@ int main()
     int organizer[N_COL][NMOD_PER_COL];
     std::vector<Runner> runners;
     std::vector<Clipper> clippers;
+    std::vector<Sticker> stickers;
     std::vector<Killer> killers;
     sf::Event event;
 
@@ -59,7 +61,7 @@ int main()
             {
                 if (!organizer[i][j])
                 {
-                    organizer[i][j] = rand() % 2 + 1; // Only Runners and Clippers generated
+                    organizer[i][j] = rand() % 3 + 1; // Only Runners, Clippers and Stickers generated
                     switch (organizer[i][j])
                     {
                     case 1:
@@ -71,6 +73,10 @@ int main()
                         break;
                     
                     case 3:
+                        stickers.emplace_back(Sticker(i, j, N_ROW));
+                        break;
+                    
+                    case 4:
                         killers.emplace_back(Killer(i, j));
                         break;
                     
@@ -103,6 +109,17 @@ int main()
             }
         }
         
+        std::cout << "Size of stickers array : " << stickers.size() << "\n";
+        for (int i = 0; i < stickers.size(); i++)
+        {
+            stickers[i].UpdateGlyphs(grid, N_ROW);
+            if (stickers[i].counter <= 0)
+            {
+                organizer[stickers[i].column][stickers[i].idInColumn] = 0;
+                stickers.erase(stickers.begin() + i);
+            }
+        }
+        
         // Implement killer actions failed
         // Too many kills? Disrespect of vector sizes?
         // => Floating point exception
@@ -110,7 +127,7 @@ int main()
         // std::cout << "Size of killers array : " << killers.size() << "\n";
         for (int i = 0; i < killers.size(); i++)
         {
-            int typeOfKill = rand() % 3 + 1;
+            int typeOfKill = rand() % 4 + 1;
             int posKill = 0;
             int col = 0;
             int id = 0;
@@ -133,7 +150,11 @@ int main()
                 clippers.erase(clippers.begin() + posKill);
                 break;
             
-            /* case 3:
+            case 3:
+                
+                break;
+            
+            /* case 4:
                 posKill = rand() % killers.size();
                 col = killers[posKill].column;
                 id = killers[posKill].idInColumn;
@@ -149,7 +170,7 @@ int main()
             killers.erase(killers.begin() + i);           
         }
 
-        std::cout << "Total number of modifiers : " << runners.size() + clippers.size() + killers.size() << "\n";
+        std::cout << "Total number of modifiers : " << runners.size() + clippers.size() + stickers.size() + killers.size() << "\n";
 
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)

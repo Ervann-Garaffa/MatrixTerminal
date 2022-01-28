@@ -1,21 +1,20 @@
 #pragma once
 #include "GlobalInclude.h"
 
-struct Clipper
+struct Sticker
 {
     int column;
     int idInColumn;
     int length;
 
     int topRow;
-    int blinkSpeed;
     int lifeSpan;
     int counter;
     
     bool popLetterWhite;
-    std::string storedGlyphs[8];
+    std::string storedGlyphs[4];
 
-    Clipper(int col, int id, const int &N_ROW);
-    ~Clipper();
+    Sticker(int col, int id, const int &N_ROW);
+    ~Sticker();
     void UpdateGlyphs(sf::Text *grid, const int &N_ROW);
 };

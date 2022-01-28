@@ -1,12 +1,11 @@
-#include "Clipper.h"
+#include "Sticker.h"
 
-Clipper::Clipper(int col, int id, const int &N_ROW)
+Sticker::Sticker(int col, int id, const int &N_ROW)
  : column(col), popLetterWhite(false), idInColumn(id)
 {
-    lifeSpan = rand() % 120 + 30;
+    lifeSpan = rand() % 170 + 30;
     counter = lifeSpan;
-    blinkSpeed = rand() % 50 + 10;
-    length = rand() % 8 + 1;
+    length = rand() % 4 + 1;
     topRow = rand() % N_ROW;
     popLetterWhite = rand() % 10 + 1 <= 1 ? true : false;
     
@@ -14,12 +13,10 @@ Clipper::Clipper(int col, int id, const int &N_ROW)
         storedGlyphs[i] = "";
 }
 
-Clipper::~Clipper(){}
+Sticker::~Sticker(){}
 
-void Clipper::UpdateGlyphs(sf::Text *grid, const int &N_ROW)
+void Sticker::UpdateGlyphs(sf::Text *grid, const int &N_ROW)
 {
-    std::string tempGlyphs[8];
-    
     for (int i = 0; i < length; i++)
     {
         if (topRow + i < N_ROW)
@@ -36,6 +33,11 @@ void Clipper::UpdateGlyphs(sf::Text *grid, const int &N_ROW)
                         storedGlyphs[j] = randGlyph;
                     } while (randGlyph > 63 && randGlyph < 91);
                 }
+                
+                grid[N_ROW * column + topRow + i].setString(storedGlyphs[i]);
+
+                if (popLetterWhite)
+                    grid[N_ROW * column + topRow + i].setFillColor(sf::Color::White);
             }
             else if (counter <= 1)
             {
@@ -43,24 +45,11 @@ void Clipper::UpdateGlyphs(sf::Text *grid, const int &N_ROW)
 
                 if (popLetterWhite)
                     grid[N_ROW * column + topRow + i].setFillColor(sf::Color::Green);
-            } 
-            else if (counter % blinkSpeed == 0)
+            }
+            else if (popLetterWhite)
             {
-                tempGlyphs[i] = storedGlyphs[i];
-                storedGlyphs[i] = grid[N_ROW * column + topRow + i].getString();
-                grid[N_ROW * column + topRow + i].setString(tempGlyphs[i]);
-
-                if (popLetterWhite)
-                    grid[N_ROW * column + topRow + i].setFillColor(sf::Color::White);
-            } 
-            else if (counter % blinkSpeed == blinkSpeed / 2)
-            {
-                tempGlyphs[i] = grid[N_ROW * column + topRow + i].getString();
                 grid[N_ROW * column + topRow + i].setString(storedGlyphs[i]);
-                storedGlyphs[i] = tempGlyphs[i];
-
-                if (popLetterWhite)
-                    grid[N_ROW * column + topRow + i].setFillColor(sf::Color::Green);
+                grid[N_ROW * column + topRow + i].setFillColor(sf::Color::White);
             }
         }
     }

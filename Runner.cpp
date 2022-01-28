@@ -6,7 +6,7 @@ Runner::Runner(int col, int id)
     speed = rand() % 8 + 1;
     counter = speed;
     length = rand() % 27 + 3;
-    popLetterWhite = rand() % 10 + 1 <= 3 ? true : false;
+    popLetterWhite = rand() % 10 + 1 <= 2 ? true : false;
 }
 
 Runner::~Runner(){}
@@ -15,8 +15,11 @@ void Runner::GenerateGlyphs(sf::Text *grid, const int &N_ROW)
 {
     if (counter == speed)
     {
-        randomGlyph = rand() % (126 - 33) + 33;
-
+        do
+        {
+            randomGlyph = rand() % (126 - 33) + 33;
+        } while (randomGlyph > 63 && randomGlyph < 91);
+        
         if (headRow < N_ROW)
         {
             grid[N_ROW * column + headRow].setString(randomGlyph);
