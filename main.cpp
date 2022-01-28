@@ -1,7 +1,5 @@
 #include "Runner.h"
-#include "Clipper.h"
 #include "Sticker.h"
-#include "Killer.h"
 
 using namespace std::chrono_literals;
 
@@ -37,11 +35,12 @@ int main()
     }
 
     srand(time(nullptr));
+    
     int organizer[N_COL][NMOD_PER_COL];
     std::vector<Runner> runners;
-    std::vector<Clipper> clippers;
     std::vector<Sticker> stickers;
-    std::vector<Killer> killers;
+    std::vector<std::vector<Runner>> runnerGroups;
+
     sf::Event event;
 
     while(window.isOpen())
@@ -61,7 +60,7 @@ int main()
             {
                 if (!organizer[i][j])
                 {
-                    organizer[i][j] = rand() % 3 + 1; // Only Runners, Clippers and Stickers generated
+                    organizer[i][j] = rand() % 2 + 1;
                     switch (organizer[i][j])
                     {
                     case 1:
@@ -69,15 +68,7 @@ int main()
                         break;
 
                     case 2:
-                        clippers.emplace_back(Clipper(i, j, N_ROW));
-                        break;
-                    
-                    case 3:
                         stickers.emplace_back(Sticker(i, j, N_ROW));
-                        break;
-                    
-                    case 4:
-                        killers.emplace_back(Killer(i, j));
                         break;
                     
                     default:
@@ -87,25 +78,40 @@ int main()
             }
         }
 
+        while (runnerGroups.size() < 15)
+        {
+            std::vector<Runner> tempRunnerVector;
+
+            int groupSize = rand() % 8 + 3;
+            int startPos = rand() % (N_COL - groupSize - 1);
+
+            for (int i = 0; i < groupSize; i++)
+            {
+                tempRunnerVector.emplace_back(Runner(startPos + i, 0));
+                tempRunnerVector[i].speed = tempRunnerVector[0].speed;
+                tempRunnerVector[i].length += 20;
+
+                if (i == 0)
+                    tempRunnerVector[0].headRow = rand() % 5;
+                else
+                    tempRunnerVector[i].headRow = std::abs(tempRunnerVector[0].headRow - (rand() % 5));
+            }
+
+            runnerGroups.emplace_back(tempRunnerVector);
+        }
+
         std::cout << "Size of runners array : " << runners.size() << "\n";
         for (int i = 0; i < runners.size(); i++)
         {
             runners[i].GenerateGlyphs(grid, N_ROW);
-            if (runners[i].headRow - runners[i].length >= N_ROW)
+
+            // Random chance of dying
+            int lives = rand() % 500;
+            
+            if (runners[i].headRow - runners[i].length >= N_ROW || !lives)
             {
                 organizer[runners[i].column][runners[i].idInColumn] = 0;
                 runners.erase(runners.begin() + i);
-            }
-        }
-
-        std::cout << "Size of clippers array : " << clippers.size() << "\n";
-        for (int i = 0; i < clippers.size(); i++)
-        {
-            clippers[i].UpdateGlyphs(grid, N_ROW);
-            if (clippers[i].counter <= 0)
-            {
-                organizer[clippers[i].column][clippers[i].idInColumn] = 0;
-                clippers.erase(clippers.begin() + i);
             }
         }
         
@@ -119,58 +125,21 @@ int main()
                 stickers.erase(stickers.begin() + i);
             }
         }
-        
-        // Implement killer actions failed
-        // Too many kills? Disrespect of vector sizes?
-        // => Floating point exception
 
-        // std::cout << "Size of killers array : " << killers.size() << "\n";
-        for (int i = 0; i < killers.size(); i++)
+        std::cout << "Size of runnerGroups array : " << runnerGroups.size() << "\n";
+        for (int i = 0; i < runnerGroups.size(); i++)
         {
-            int typeOfKill = rand() % 4 + 1;
-            int posKill = 0;
-            int col = 0;
-            int id = 0;
-
-            switch (typeOfKill)
+            for (int j = 0; j < runnerGroups[i].size(); j++)
             {
-            case 1:
-                posKill = rand() % runners.size();
-                col = runners[posKill].column;
-                id = runners[posKill].idInColumn;
-                organizer[col][id] = 0;
-                runners.erase(runners.begin() + posKill);
-                break;
-
-            case 2:
-                posKill = rand() % clippers.size();
-                col = clippers[posKill].column;
-                id = clippers[posKill].idInColumn;
-                organizer[col][id] = 0;
-                clippers.erase(clippers.begin() + posKill);
-                break;
-            
-            case 3:
-                
-                break;
-            
-            /* case 4:
-                posKill = rand() % killers.size();
-                col = killers[posKill].column;
-                id = killers[posKill].idInColumn;
-                organizer[col][id] = 0;
-                killers.erase(killers.begin() + posKill);
-                break;
-             */
-            default:
-                break;
+                runnerGroups[i][j].GenerateGlyphs(grid, N_ROW);
+                if (runnerGroups[i][j].headRow - runnerGroups[i][j].length >= N_ROW)
+                {
+                    runnerGroups.erase(runnerGroups.begin() + i);
+                }
             }
-
-            organizer[killers[i].column][killers[i].idInColumn] = 0;
-            killers.erase(killers.begin() + i);           
         }
-
-        std::cout << "Total number of modifiers : " << runners.size() + clippers.size() + stickers.size() + killers.size() << "\n";
+        
+        std::cout << "Total number of modifiers : " << runners.size() + stickers.size() + runnerGroups.size() << "\n";
 
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)
