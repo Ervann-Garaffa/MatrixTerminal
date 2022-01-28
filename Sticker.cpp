@@ -3,7 +3,7 @@
 Sticker::Sticker(int col, int id, const int &N_ROW)
  : column(col), popLetterWhite(false), idInColumn(id)
 {
-    lifeSpan = rand() % 170 + 30;
+    lifeSpan = rand() % 120 + 30;
     counter = lifeSpan;
     length = rand() % 4 + 1;
     topRow = rand() % N_ROW;
