@@ -3,10 +3,10 @@
 Runner::Runner(int col, int id)
  : headRow(0), column(col), randomGlyph(' '), popLetterWhite(false), idInColumn(id)
 {
-    speed = rand() % 8 + 1;
+    speed = rand() % 5 + 1;
     counter = speed;
     length = rand() % 17 + 3;
-    popLetterWhite = rand() % 10 + 1 <= 2 ? true : false;
+    popLetterWhite = rand() % 20 + 1 <= 2 ? true : false;
 }
 
 Runner::~Runner(){}

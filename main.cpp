@@ -146,7 +146,7 @@ int main()
             window.draw(grid[i]);
         window.display();
 
-        std::this_thread::sleep_for(25ms);
+        std::this_thread::sleep_for(30ms);
     }
 
     return EXIT_SUCCESS;
