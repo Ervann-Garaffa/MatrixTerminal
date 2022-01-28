@@ -82,7 +82,7 @@ int main()
         {
             std::vector<Runner> tempRunnerVector;
 
-            int groupSize = rand() % 8 + 3;
+            int groupSize = (rand() % 2 + 1) * (rand() % 3 + 2);
             int startPos = rand() % (N_COL - groupSize - 1);
 
             for (int i = 0; i < groupSize; i++)
@@ -100,7 +100,6 @@ int main()
             runnerGroups.emplace_back(tempRunnerVector);
         }
 
-        std::cout << "Size of runners array : " << runners.size() << "\n";
         for (int i = 0; i < runners.size(); i++)
         {
             runners[i].GenerateGlyphs(grid, N_ROW);
@@ -115,7 +114,6 @@ int main()
             }
         }
         
-        std::cout << "Size of stickers array : " << stickers.size() << "\n";
         for (int i = 0; i < stickers.size(); i++)
         {
             stickers[i].UpdateGlyphs(grid, N_ROW);
@@ -126,20 +124,15 @@ int main()
             }
         }
 
-        std::cout << "Size of runnerGroups array : " << runnerGroups.size() << "\n";
         for (int i = 0; i < runnerGroups.size(); i++)
         {
             for (int j = 0; j < runnerGroups[i].size(); j++)
             {
                 runnerGroups[i][j].GenerateGlyphs(grid, N_ROW);
                 if (runnerGroups[i][j].headRow - runnerGroups[i][j].length >= N_ROW)
-                {
                     runnerGroups.erase(runnerGroups.begin() + i);
-                }
             }
         }
-        
-        std::cout << "Total number of modifiers : " << runners.size() + stickers.size() + runnerGroups.size() << "\n";
 
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)
