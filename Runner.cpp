@@ -5,7 +5,7 @@ Runner::Runner(int col, int id)
 {
     speed = rand() % 8 + 1;
     counter = speed;
-    length = rand() % 37 + 3;
+    length = rand() % 27 + 3;
     popLetterWhite = rand() % 10 + 1 <= 3 ? true : false;
 }
 

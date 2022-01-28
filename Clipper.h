@@ -10,12 +10,12 @@ struct Clipper
     int topRow;
     int blinkSpeed;
     int lifeSpan;
+    int counter;
     
     bool popLetterWhite;
-    char randomGlyph;
-    std::string storedGlyphs[5];
+    std::string storedGlyphs[6];
 
     Clipper(int col, int id, const int &N_ROW);
     ~Clipper();
-    void GenerateGlyphs(sf::Text *grid, const int &N_ROW);
+    void UpdateGlyphs(sf::Text *grid, const int &N_ROW);
 };

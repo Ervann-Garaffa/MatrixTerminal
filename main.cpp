@@ -6,8 +6,8 @@ using namespace std::chrono_literals;
 
 const int WIN_WIDTH = 1920;
 const int WIN_HEIGHT = 1080;
-const int SCALE_ROW = 18;
-const int SCALE_COL = 12;
+const int SCALE_ROW = 16;
+const int SCALE_COL = 10;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
 const int NMOD_PER_COL = 3;
@@ -70,9 +70,9 @@ int main()
                         clippers.emplace_back(Clipper(i, j, N_ROW));
                         break;
                     
-                    /* case 3:
+                    case 3:
                         killers.emplace_back(Killer(i, j));
-                        break; */
+                        break;
                     
                     default:
                         break;
@@ -81,6 +81,7 @@ int main()
             }
         }
 
+        std::cout << "Size of runners array : " << runners.size() << "\n";
         for (int i = 0; i < runners.size(); i++)
         {
             runners[i].GenerateGlyphs(grid, N_ROW);
@@ -91,10 +92,11 @@ int main()
             }
         }
 
+        std::cout << "Size of clippers array : " << clippers.size() << "\n";
         for (int i = 0; i < clippers.size(); i++)
         {
-            clippers[i].GenerateGlyphs(grid, N_ROW);
-            if (!clippers[i].lifeSpan)
+            clippers[i].UpdateGlyphs(grid, N_ROW);
+            if (clippers[i].counter <= 0)
             {
                 organizer[clippers[i].column][clippers[i].idInColumn] = 0;
                 clippers.erase(clippers.begin() + i);
@@ -105,14 +107,13 @@ int main()
         // Too many kills? Disrespect of vector sizes?
         // => Floating point exception
 
-        /* for (int i = 0; i < killers.size(); i++)
+        // std::cout << "Size of killers array : " << killers.size() << "\n";
+        for (int i = 0; i < killers.size(); i++)
         {
             int typeOfKill = rand() % 3 + 1;
             int posKill = 0;
             int col = 0;
             int id = 0;
-
-            std::cout << typeOfKill << "\n";
 
             switch (typeOfKill)
             {
@@ -120,31 +121,35 @@ int main()
                 posKill = rand() % runners.size();
                 col = runners[posKill].column;
                 id = runners[posKill].idInColumn;
-                runners.erase(runners.begin() + posKill);
                 organizer[col][id] = 0;
+                runners.erase(runners.begin() + posKill);
                 break;
 
             case 2:
                 posKill = rand() % clippers.size();
                 col = clippers[posKill].column;
                 id = clippers[posKill].idInColumn;
-                clippers.erase(clippers.begin() + posKill);
                 organizer[col][id] = 0;
+                clippers.erase(clippers.begin() + posKill);
                 break;
             
-            case 3:
+            /* case 3:
                 posKill = rand() % killers.size();
                 col = killers[posKill].column;
                 id = killers[posKill].idInColumn;
-                killers.erase(killers.begin() + posKill);
                 organizer[col][id] = 0;
+                killers.erase(killers.begin() + posKill);
                 break;
-            
+             */
             default:
                 break;
             }
-                        
-        } */
+
+            organizer[killers[i].column][killers[i].idInColumn] = 0;
+            killers.erase(killers.begin() + i);           
+        }
+
+        std::cout << "Total number of modifiers : " << runners.size() + clippers.size() + killers.size() << "\n";
 
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)
