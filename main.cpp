@@ -1,5 +1,6 @@
 #include "Runner.h"
 #include "Sticker.h"
+#include "Drop.h"
 
 using namespace std::chrono_literals;
 
@@ -10,8 +11,8 @@ const int SCALE_COL = 10;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
 const int NMOD_PER_COL = 5;
-const int MAX_MOD_LOW = 100;
-const int MAX_MOD_HIGH = 700;
+const int MAX_MOD_LOW = 50;
+const int MAX_MOD_HIGH = 800;
 
 int main()
 {
@@ -45,11 +46,12 @@ int main()
     int organizer[N_COL][NMOD_PER_COL];
     std::vector<Runner> runners;
     std::vector<Sticker> stickers;
+    Drop drop;
     std::vector<std::vector<Runner>> runnerGroups;
 
-    int targetMaxMod = 50;
-    float incTarget = 50.f;
-    float inc = 0.01f;
+    int targetMaxMod = 20;
+    float incTarget = 5.f;
+    float inc = 0.1f;
 
     // Window loop
     sf::Event event;
@@ -73,7 +75,7 @@ int main()
                 targetMaxMod = rand() % (MAX_MOD_HIGH - MAX_MOD_LOW) + MAX_MOD_LOW;
             } while (targetMaxMod == runners.size() + stickers.size() + runnerGroups.size());
             
-            inc = (float)(rand() % 8 + 3) / 5;
+            inc = (float)((rand() % 9 + 2)*(rand() % 9 + 2)) / 50;
             incTarget = runners.size() + stickers.size() + runnerGroups.size();
 
             if (runners.size() + stickers.size() + runnerGroups.size() > targetMaxMod)
@@ -108,7 +110,7 @@ int main()
             }
 
             // Runner groups creation
-            if ((runnerGroups.size() < 20) && (runners.size() + stickers.size() + runnerGroups.size() < incTarget))
+            if (runnerGroups.size() < (runners.size() + stickers.size() + runnerGroups.size()) / 30)
             {
                 std::vector<Runner> tempRunnerVector;
 
@@ -131,6 +133,8 @@ int main()
             }
         }
 
+        if (!drop.speed && !(rand() % 100))
+            drop.Start(N_COL, N_ROW);
 
         // Apply modifiers' behaviors
         for (int i = 0; i < runners.size(); i++)
