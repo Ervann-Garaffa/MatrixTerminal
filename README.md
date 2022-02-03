@@ -2,8 +2,8 @@
 
 | Requires: | Recommended for rebuild |
 | ----------- | ----------- |
-|- SFML library | - *GCC compiler* |
-|- 1080p display | - *Make tools* |
+|- SFML library | - GCC compiler |
+|- 1080p display | - Make tools |
 
 ## Modifier Objects
 
@@ -15,3 +15,5 @@ Sticker
 
 Runner Groups
 : Rain of code bulks
+
+## Variable activity

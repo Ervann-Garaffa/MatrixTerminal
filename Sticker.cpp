@@ -25,13 +25,13 @@ void Sticker::UpdateGlyphs(sf::Text *grid, const int &N_ROW)
             {
                 for (int j = 0; j < length; j++)
                 {
-                    int randGlyph;
+                    int randomGlyph;
 
                     do
                     {
-                        randGlyph = rand() % (126 - 33) + 33;
-                        storedGlyphs[j] = randGlyph;
-                    } while (randGlyph > 63 && randGlyph < 91);
+                        randomGlyph = rand() % (126 - 33) + 33;
+                        storedGlyphs[j] = randomGlyph;
+                    } while ((randomGlyph > 63 && randomGlyph < 91) || randomGlyph == 96 || (randomGlyph > 47 && randomGlyph < 58));
                 }
                 
                 grid[N_ROW * column + topRow + i].setString(storedGlyphs[i]);

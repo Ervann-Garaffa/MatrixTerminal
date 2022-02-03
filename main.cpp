@@ -9,10 +9,13 @@ const int SCALE_ROW = 16;
 const int SCALE_COL = 10;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
-const int NMOD_PER_COL = 3;
+const int NMOD_PER_COL = 5;
+const int MAX_MOD_LOW = 100;
+const int MAX_MOD_HIGH = 700;
 
 int main()
 {
+    // Config of window + font
     sf::RenderWindow window;//(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Matrix Terminal");
     window.create(sf::VideoMode::getDesktopMode(), "Borderless Fullscreen", sf::Style::Fullscreen);
 
@@ -20,6 +23,7 @@ int main()
     if (!font.loadFromFile("MatrixCodeNfi-YPPj.otf"))
         return -42;
 
+    // Create empty grid of characters
     sf::Text emptyText;
     emptyText.setFillColor(sf::Color::Green);
     emptyText.setFont(font);
@@ -34,13 +38,20 @@ int main()
                                 SCALE_ROW * (i % N_ROW) - 5);
     }
 
+    // Random generator init
     srand(time(nullptr));
     
+    // Modifier objects declarations
     int organizer[N_COL][NMOD_PER_COL];
     std::vector<Runner> runners;
     std::vector<Sticker> stickers;
     std::vector<std::vector<Runner>> runnerGroups;
 
+    int targetMaxMod = 50;
+    float incTarget = 50.f;
+    float inc = 0.01f;
+
+    // Window loop
     sf::Event event;
 
     while(window.isOpen())
@@ -54,52 +65,74 @@ int main()
                 int flag = std::cin.get();
         }
 
-        for (int i = 0; i < N_COL; i++)
+        incTarget += inc;
+        if ((inc > 0 && incTarget > targetMaxMod) || (inc < 0 && incTarget < targetMaxMod))
         {
-            for (int j = 0; j < NMOD_PER_COL; j++)
+            do
             {
-                if (!organizer[i][j])
-                {
-                    organizer[i][j] = rand() % 2 + 1;
-                    switch (organizer[i][j])
-                    {
-                    case 1:
-                        runners.emplace_back(Runner(i, j));
-                        break;
+                targetMaxMod = rand() % (MAX_MOD_HIGH - MAX_MOD_LOW) + MAX_MOD_LOW;
+            } while (targetMaxMod == runners.size() + stickers.size() + runnerGroups.size());
+            
+            inc = (float)(rand() % 8 + 3) / 5;
+            incTarget = runners.size() + stickers.size() + runnerGroups.size();
 
-                    case 2:
-                        stickers.emplace_back(Sticker(i, j, N_ROW));
-                        break;
-                    
-                    default:
-                        break;
-                    }
+            if (runners.size() + stickers.size() + runnerGroups.size() > targetMaxMod)
+                inc = - inc;
+        }
+
+        std::cout << "Inc : " << inc << " | incTarget : " << incTarget << " | targetMaxMod : " << targetMaxMod << 
+            " | Mod number : " << runners.size() + stickers.size() + runnerGroups.size() << "\n";
+
+        // Unique modifiers creation
+        while (runners.size() + stickers.size() + runnerGroups.size() < incTarget)
+        {
+            int i = rand() % N_COL;
+            int j = rand() % NMOD_PER_COL;
+
+            if (!organizer[i][j])
+            {
+                organizer[i][j] = rand() % 2 + 1;
+                switch (organizer[i][j])
+                {
+                case 1:
+                    runners.emplace_back(Runner(i, j));
+                    break;
+
+                case 2:
+                    stickers.emplace_back(Sticker(i, j, N_ROW));
+                    break;
+                
+                default:
+                    break;
                 }
             }
-        }
 
-        while (runnerGroups.size() < 15)
-        {
-            std::vector<Runner> tempRunnerVector;
-
-            int groupSize = (rand() % 2 + 1) * (rand() % 3 + 2);
-            int startPos = rand() % (N_COL - groupSize - 1);
-
-            for (int i = 0; i < groupSize; i++)
+            // Runner groups creation
+            if ((runnerGroups.size() < 20) && (runners.size() + stickers.size() + runnerGroups.size() < incTarget))
             {
-                tempRunnerVector.emplace_back(Runner(startPos + i, 0));
-                tempRunnerVector[i].speed = tempRunnerVector[0].speed;
-                tempRunnerVector[i].length += 20;
+                std::vector<Runner> tempRunnerVector;
 
-                if (i == 0)
-                    tempRunnerVector[0].headRow = rand() % 5;
-                else
-                    tempRunnerVector[i].headRow = std::abs(tempRunnerVector[0].headRow - (rand() % 5));
+                int groupSize = rand() % 8 + 2;
+                int startPos = rand() % (N_COL - groupSize - 1);
+
+                for (int i = 0; i < groupSize; i++)
+                {
+                    tempRunnerVector.emplace_back(Runner(startPos + i, 0));
+                    tempRunnerVector[i].speed = tempRunnerVector[0].speed;
+                    tempRunnerVector[i].length += rand() % 30 + 10;
+
+                    if (i == 0)
+                        tempRunnerVector[0].headRow = rand() % 5;
+                    else
+                        tempRunnerVector[i].headRow = std::abs(tempRunnerVector[0].headRow - (rand() % 5));
+                }
+
+                runnerGroups.emplace_back(tempRunnerVector);
             }
-
-            runnerGroups.emplace_back(tempRunnerVector);
         }
 
+
+        // Apply modifiers' behaviors
         for (int i = 0; i < runners.size(); i++)
         {
             runners[i].GenerateGlyphs(grid, N_ROW);
@@ -129,17 +162,19 @@ int main()
             for (int j = 0; j < runnerGroups[i].size(); j++)
             {
                 runnerGroups[i][j].GenerateGlyphs(grid, N_ROW);
-                if (runnerGroups[i][j].headRow - runnerGroups[i][j].length >= N_ROW)
+                if (runnerGroups[i][j].headRow - runnerGroups[i][j].length >= N_ROW + 10)
                     runnerGroups.erase(runnerGroups.begin() + i);
             }
         }
-
+        
+        // Render grid
         window.clear();
         for (int i = 0; i < sizeof(grid) / sizeof(grid[0]); i++)
             window.draw(grid[i]);
         window.display();
 
-        std::this_thread::sleep_for(30ms);
+        // Set frame time
+        std::this_thread::sleep_for(25ms);
     }
 
     return EXIT_SUCCESS;
