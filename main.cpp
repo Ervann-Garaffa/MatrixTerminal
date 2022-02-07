@@ -178,7 +178,7 @@ int main()
         window.display();
 
         // Set frame time
-        std::this_thread::sleep_for(25ms);
+        std::this_thread::sleep_for(45ms);
     }
 
     return EXIT_SUCCESS;
