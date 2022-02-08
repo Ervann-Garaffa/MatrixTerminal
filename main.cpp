@@ -10,9 +10,9 @@ const int SCALE_ROW = 16;
 const int SCALE_COL = 10;
 const int N_COL = WIN_WIDTH / SCALE_COL;
 const int N_ROW = WIN_HEIGHT / SCALE_ROW;
-const int NMOD_PER_COL = 5;
-const int MAX_MOD_LOW = 50;
-const int MAX_MOD_HIGH = 800;
+const int NMOD_PER_COL = 6;
+const int MAX_MOD_HIGH = N_COL * NMOD_PER_COL;
+const int MAX_MOD_LOW = MAX_MOD_HIGH / 20;
 
 int main()
 {
@@ -73,20 +73,20 @@ int main()
             do
             {
                 targetMaxMod = rand() % (MAX_MOD_HIGH - MAX_MOD_LOW) + MAX_MOD_LOW;
-            } while (targetMaxMod == runners.size() + stickers.size() + runnerGroups.size());
+            } while (targetMaxMod == runners.size() + stickers.size());
             
-            inc = (float)((rand() % 9 + 2)*(rand() % 9 + 2)) / 50;
-            incTarget = runners.size() + stickers.size() + runnerGroups.size();
+            inc = (float)((rand() % 5 + 2)*(rand() % 5 + 2)*(rand() % 5 + 2)) / 50;
+            incTarget = runners.size() + stickers.size();
 
-            if (runners.size() + stickers.size() + runnerGroups.size() > targetMaxMod)
+            if (runners.size() + stickers.size() > targetMaxMod)
                 inc = - inc;
         }
 
         std::cout << "Inc : " << inc << " | incTarget : " << incTarget << " | targetMaxMod : " << targetMaxMod << 
-            " | Mod number : " << runners.size() + stickers.size() + runnerGroups.size() << "\n";
+            " | Unique Mods number : " << runners.size() + stickers.size() << " | Runner group number : " << + runnerGroups.size() << "\n";
 
         // Unique modifiers creation
-        while (runners.size() + stickers.size() + runnerGroups.size() < incTarget)
+        while (runners.size() + stickers.size() < incTarget)
         {
             int i = rand() % N_COL;
             int j = rand() % NMOD_PER_COL;
@@ -110,18 +110,18 @@ int main()
             }
 
             // Runner groups creation
-            if (runnerGroups.size() < (runners.size() + stickers.size() + runnerGroups.size()) / 30)
+            if (runnerGroups.size() < (runners.size() + stickers.size() + runnerGroups.size()) / 20)
             {
                 std::vector<Runner> tempRunnerVector;
 
-                int groupSize = rand() % 8 + 2;
+                int groupSize = rand() % 6 + 2;
                 int startPos = rand() % (N_COL - groupSize - 1);
 
                 for (int i = 0; i < groupSize; i++)
                 {
                     tempRunnerVector.emplace_back(Runner(startPos + i, 0));
                     tempRunnerVector[i].speed = tempRunnerVector[0].speed;
-                    tempRunnerVector[i].length += rand() % 30 + 10;
+                    tempRunnerVector[i].length += rand() % 25 + 5;
 
                     if (i == 0)
                         tempRunnerVector[0].headRow = rand() % 5;
