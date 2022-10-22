@@ -2,7 +2,7 @@
 
 | Requires: | Recommended for rebuild |
 | ----------- | ----------- |
-|- SFML library | - GCC compiler |
+|- SFML library | - G++ compiler |
 |- 1080p display | - Make tools |
 
 ## Modifier Objects
